@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>讃岐うどんガチャ (3エリア制・15店舗版)</title>
+    <title>讃岐うどんガチャ (おみくじ機能付き)</title>
     <style>
         :root {
             --primary: #ff6b6b;
@@ -94,7 +94,6 @@
             padding: 15px;
             margin-top: 15px;
             display: none;
-            animation: fadeIn 0.4s ease-in-out;
         }
         .result-card.active {
             display: block;
@@ -132,25 +131,51 @@
         .map-link:hover {
             background: #01a3a4;
         }
-        .github-box {
-            background: #2f3640;
-            color: white;
+
+        /* --- 新しく追加したおみくじ用のアニメーションとスタイル --- */
+        .shaking-box {
+            text-align: center;
+            font-size: 3rem;
+            animation: shake 0.5s infinite;
+            margin-top: 10px;
+        }
+        .omikuji-paper {
+            background: #fff;
+            border: 3px solid var(--primary);
+            border-radius: 8px;
             padding: 20px;
-            border-radius: 16px;
-            margin-top: 40px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: pulse 1.5s infinite;
+            transition: transform 0.2s;
+            margin: 10px auto;
+            max-width: 250px;
         }
-        .github-box h3 {
+        .omikuji-paper:hover {
+            transform: scale(1.05);
+        }
+        .omikuji-icon {
+            font-size: 3rem;
             margin-bottom: 10px;
-            color: #f5cd79;
         }
-        .github-box ol {
-            padding-left: 20px;
-            font-size: 0.9rem;
-            line-height: 1.8;
+        .reveal-anim {
+            animation: fadeIn 0.6s ease-out forwards;
         }
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-5px) rotate(-10deg); }
+            75% { transform: translateX(5px) rotate(10deg); }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.5); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
         }
     </style>
 </head>
@@ -195,8 +220,6 @@
                 <button style="background-color: #9b59b6;" onclick="spinAll()">3エリアから1店舗ずつ引く</button>
             </div>
         </div>
-
-       
     </div>
 
     <script>
@@ -244,24 +267,55 @@
             ]
         };
 
+        // ガチャを引いておみくじの紙を出す処理
         function spin(areaKey) {
             const list = db[areaKey];
             const card = document.getElementById('result-' + areaKey);
             
             card.className = "result-card active";
-            card.innerHTML = `<div class="store-name" style="color:#ff6b6b;">抽選中…… 🌀</div>`;
+            
+            // ① おみくじの筒を振るアニメーションを表示
+            card.innerHTML = `
+                <div class="shaking-box">🎋</div>
+                <div style="text-align:center; color:#ff6b6b; font-weight:bold; margin-top:10px;">
+                    おみくじを引いています……
+                </div>
+            `;
 
+            // ② 1秒後に「おみくじの紙」を表示する
             setTimeout(() => {
-                const item = list[Math.floor(Math.random() * list.length)];
+                // ここでランダムに1店舗決めておく
+                const itemIndex = Math.floor(Math.random() * list.length);
+                
+                // タップできる紙を表示（クリックでreveal関数を呼ぶ）
                 card.innerHTML = `
+                    <div class="omikuji-paper" onclick="reveal('${areaKey}', ${itemIndex})">
+                        <div class="omikuji-icon">📜</div>
+                        <p style="font-weight:bold; color:var(--primary-dark); font-size:1.1rem;">おみくじが出ました！</p>
+                        <p style="font-size:0.85rem; color:#555; margin-top:5px;">（タップして開く）</p>
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        // 紙をタップしたときに結果を見せる処理
+        function reveal(areaKey, itemIndex) {
+            const item = db[areaKey][itemIndex];
+            const card = document.getElementById('result-' + areaKey);
+
+            // ③ アニメーションとともに店舗情報を表示
+            card.innerHTML = `
+                <div class="reveal-anim">
+                    <div style="text-align:center; font-size:2.5rem; margin-bottom:10px;">🎊</div>
                     <div class="store-name">🎉 ${item.name}</div>
                     <div class="store-desc">${item.desc}</div>
                     <div class="store-hours">営業時間: ${item.hours}</div><br>
                     <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name)}&query_place_id=${item.placeId}" target="_blank">🗺️ Googleマップで見る</a>
-                `;
-            }, 1500);
+                </div>
+            `;
         }
 
+        // 3エリア同時ピックアップ機能
         function spinAll() {
             spin('kanonji');
             spin('marugame_etc');
