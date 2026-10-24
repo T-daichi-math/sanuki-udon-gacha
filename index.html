@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讃岐うどんガチャ (3エリア制・15店舗版)</title>
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --primary-dark: #ee5253;
+            --secondary: #feca57;
+            --accent: #48dbfb;
+            --dark: #222f3e;
+            --light: #f7f1e3;
+            --card-bg: #ffffff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            color: #576574;
+            font-size: 1rem;
+        }
+        .area-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary);
+        }
+        .area-section:nth-child(2) { border-color: #ff9f43; }
+        .area-section:nth-child(3) { border-color: #10ac84; }
+        .area-section:nth-child(4) { border-color: #2e86de; }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        .result-card {
+            background: #fdfbf7;
+            border: 2px dashed #dfe4ea;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .result-card.active {
+            display: block;
+        }
+        .store-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        .store-desc {
+            font-size: 0.95rem;
+            color: #576574;
+            margin-bottom: 10px;
+        }
+        .store-hours {
+            font-size: 0.85rem;
+            background: #fffa65;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .map-link {
+            display: inline-block;
+            background: #00d2d3;
+            color: white;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .map-link:hover {
+            background: #01a3a4;
+        }
+        .github-box {
+            background: #2f3640;
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 40px;
+        }
+        .github-box h3 {
+            margin-bottom: 10px;
+            color: #f5cd79;
+        }
+        .github-box ol {
+            padding-left: 20px;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍜 讃岐うどんガチャ (3エリア対応)</h1>
+            <p class="subtitle">香川県の人気うどん店を3つのエリア別にランダムで引き当てるガチャシステム！</p>
+        </header>
+
+        <!-- ① 観音寺エリア -->
+        <div class="area-section">
+            <h2>📍 ① 観音寺エリア <small style="font-size:0.8rem; color:#888;">(5店舗)</small></h2>
+            <div class="btn-group">
+                <button onclick="spin('kanonji')">観音寺ガチャを回す</button>
+            </div>
+            <div id="result-kanonji" class="result-card"></div>
+        </div>
+
+        <!-- ② 丸亀・宇多津・坂出・善通寺エリア -->
+        <div class="area-section">
+            <h2>📍 ② 丸亀・宇多津・坂出・善通寺エリア <small style="font-size:0.8rem; color:#888;">(15店舗)</small></h2>
+            <div class="btn-group">
+                <button style="background-color: #ff9f43;" onclick="spin('marugame_etc')">中讃エリアガチャを回す</button>
+            </div>
+            <div id="result-marugame_etc" class="result-card"></div>
+        </div>
+
+        <!-- ③ 高松エリア -->
+        <div class="area-section">
+            <h2>📍 ③ 高松エリア <small style="font-size:0.8rem; color:#888;">(15店舗)</small></h2>
+            <div class="btn-group">
+                <button style="background-color: #10ac84;" onclick="spin('takamatsu')">高松エリアガチャを回す</button>
+            </div>
+            <div id="result-takamatsu" class="result-card"></div>
+        </div>
+
+        <!-- 全エリア一括 -->
+        <div class="area-section" style="border-top-color: #9b59b6;">
+            <h2>✨ 全3エリア同時ピックアップ</h2>
+            <div class="btn-group">
+                <button style="background-color: #9b59b6;" onclick="spinAll()">3エリアから1店舗ずつ引く</button>
+            </div>
+        </div>
+
+        <!-- GitHub解説ボックス -->
+        <div class="github-box">
+            <h3>🐙 GitHubへアップロードしてWeb公開する手順</h3>
+            <ol>
+                <li>このページをダウンロードするか、コードをコピーして <code>index.html</code> という名前で保存します。</li>
+                <li><a href="https://github.com/" target="_blank" style="color: #48dbfb;">GitHub</a>にログインし、新しいリポジトリ（Repository）を作成します（Publicに設定）。</li>
+                <li>作成したリポジトリのページで 「Add file」 ＞ 「Upload files」 を選び、<code>index.html</code> をアップロードしてコミットします。</li>
+                <li>リポジトリの <strong>Settings</strong> ＞ <strong>Pages</strong> を開き、Branchを <code>main</code> (または <code>master</code>) に設定して Save します。</li>
+                <li>数分後に発行されるURLにアクセスすれば、スマホやPCからいつでもガチャを回せます！</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const db = {
+            kanonji: [
+                { name: "手打ちうどん つるや", desc: "もっちりとした太麺といりこの効いた甘めの出汁が特徴の老舗。", hours: "10:00〜20:00（火曜定休）", placeId: "ChIJLSr7uAKDUTURpLGJ54QUV1I" },
+                { name: "うどんや カマ喜ri", desc: "カフェのようなおしゃれな空間でうどんと天ぷらを味わえるお店。", hours: "11:00〜14:00（日曜定休）", placeId: "ChIJN_IITQiDUTURWSzqy1ZuDVI" },
+                { name: "西端手打 上戸うどん", desc: "海沿いのロケーションで、いりこ出汁のパンチが効いた人気店。", hours: "6:00〜15:00（無休）", placeId: "ChIJVVVchqKaUTURnfebyn3sxpE" },
+                { name: "大喜多うどん", desc: "注文を受けてから丁寧に作る、家庭的でホッとする味わいの老舗。", hours: "9:00〜14:30（日曜定休）", placeId: "ChIJu2S0ebODUTURXnFlPNE-LZw" },
+                { name: "柳川製麺所 やな川うどん 本店", desc: "製麺所直営ならではの昔ながらのシンプルな味わいが楽しめるお店。", hours: "8:30〜15:00（木曜定休）", placeId: "ChIJmZ_pXiWDUTURPdeeUPVtAaU" }
+            ],
+            marugame_etc: [
+                { name: "麺処 綿谷 丸亀店", desc: "大ボリュームの牛肉ぶっかけうどんで有名な大行列の超人気店。", hours: "8:30〜14:00（日曜定休）", placeId: "ChIJhdpyUZvYUzURxYnHVgxsMZg" },
+                { name: "なかむらうどん", desc: "自分でネギを切るセルフスタイルも名物の、釜玉うどんが絶品のお店。", hours: "9:00〜14:00（火曜定休）", placeId: "ChIJ-9rKKK7ZUzURQ4sbn2YjQuU" },
+                { name: "純手打うどん よしや", desc: "機械を一切使わない完全な純手打ち。朝7時から営業。", hours: "7:00〜14:00（火曜定休）", placeId: "ChIJv-XGf6jZUzUR8Yh3izjU3dA" },
+                { name: "本格手打うどん おか泉", desc: "大きなエビ天がのった「冷天おろし」が代名詞の高級感ある名店。", hours: "11:00〜19:00（月・火曜定休）", placeId: "ChIJ50nPXtLYUzURzM_8Cpk_qrY" },
+                { name: "讃岐の味 塩がま屋", desc: "うどんと香川名物・骨付鳥を一緒に楽しめる広々としたお店。", hours: "11:00〜20:30（水曜定休）", placeId: "ChIJYxKwPM_YUzURezUstswemgs" },
+                { name: "こがね製麺所 宇多津店", desc: "早朝から夜まで通し営業でいつでも茹でたてが食べられる便利なお店。", hours: "6:00〜20:00（無休）", placeId: "ChIJVVWh48rYUzURQqnaGgbs8gg" },
+                { name: "日の出製麺所", desc: "お昼のわずか1時間だけ営業する、最高の状態の麺が味わえる伝説的店。", hours: "11:30〜12:30（無休）", placeId: "ChIJVWAA-7jeUzURBtyBRrFAVxs" },
+                { name: "がもううどん", desc: "のどかな田園風景の中にある、行列の絶えない販売所スタイルの名店。", hours: "8:30〜14:00（日・月曜定休）", placeId: "ChIJJ_VswKXdUzUR57RHQ0OQru0" },
+                { name: "めんや七福 別邸", desc: "和風の落ち着いた建物の中でゆったりとうどんを楽しめるフルサービス店。", hours: "10:00〜15:00（水曜定休）", placeId: "ChIJje5cN0rZUzUR3lsvH9z56Bs" },
+                { name: "讃岐うどん やなぎ屋 西大浜店", desc: "早朝から夜まで通し営業で、しっかりとしたコシの強い麺が味わえるお店。", hours: "6:00〜20:00（木曜定休）", placeId: "ChIJg2u8eOneUzURbqfhRso-xXc" },
+                { name: "長田 in 香の香", desc: "いりこ出汁の熱いつけ汁で食べる釜揚げうどんの全国的名店。", hours: "9:00〜15:00（水・木曜定休）", placeId: "ChIJaUYAsE99UTURvKrmpF8xh9E" },
+                { name: "山下うどん", desc: "ぶっかけうどんの元祖と言われる、非常に強いコシが自慢のお店。", hours: "9:30〜16:00（火曜定休）", placeId: "ChIJVVUF-JDXUzUR7uDCavVTYas" },
+                { name: "宮川製麺所", desc: "寸胴鍋から自分で出汁を注ぐ、昔ながらの完全セルフ製麺所。", hours: "8:00〜18:00（日曜定休）", placeId: "ChIJcxQxNHN9UTURdVS5suuIblA" },
+                { name: "こだわり八輻", desc: "善通寺の近くにある、グミ系のしっかりした弾力麺が人気のお店。", hours: "11:00〜14:00（火・金曜定休）", placeId: "ChIJDXg3_Z99UTURQeA_g0OeRb8" },
+                { name: "白川うどん", desc: "ホッと落ち着くような温かい雰囲気の、モチモチ食感が愛されるセルフ店。", hours: "10:00〜14:30（火曜定休）", placeId: "ChIJ4yo288TXUzURo-WftDfh6cM" }
+            ],
+            takamatsu: [
+                { name: "手打十段 うどんバカ一代", desc: "和風カルボナーラ「釜バターうどん」発祥の超有名店。", hours: "6:00〜18:00（無休）", placeId: "ChIJMWyhJHbrUzURpONppDqqkeg" },
+                { name: "うどん本陣 山田家", desc: "登録有形文化財の日本家屋で味わう、趣のある高級感あふれる名店。", hours: "11:00〜15:00, 17:00〜20:00（水曜定休）", placeId: "ChIJHTq9C_6SUzURcamR_rZEdZA" },
+                { name: "さぬきうどん 上原屋本店", desc: "栗林公園近く。テボを使った昔ながらのセルフを体験できる。", hours: "9:30〜14:30（日曜定休）", placeId: "ChIJWUJrkbDrUzURKf-Dpey_-lI" },
+                { name: "本格手打もり家 高松本店", desc: "どんぶりを覆い尽くすほどの巨大なかき揚げが有名な名店。", hours: "10:30〜18:00（木・金曜定休）", placeId: "ChIJKekzJgTBUzURbxd4cydPdWI" },
+                { name: "おうどん 瀬戸晴れ", desc: "シルクのような滑らかさと伸びのある麺が絶品の連日大行列店。", hours: "9:00〜14:00（水・木曜定休）", placeId: "ChIJi_af1nKVUzURqL9SommS5yI" },
+                { name: "さか枝うどん 本店", desc: "官庁街にあり、安くて早くて美味しい王道の讃岐うどん店。", hours: "7:00〜15:00（土日定休）", placeId: "ChIJC_VmoZXrUzURqKwqDf9kWZg" },
+                { name: "セルフうどんの店 ちくせい", desc: "揚げたての「半熟たまご天」をトッピングするのが定番の老舗。", hours: "10:45〜14:30（月曜定休）", placeId: "ChIJTxGVIL7rUzURH7e2fgVhDNI" },
+                { name: "松下製麺所", desc: "うどん＋中華麺の2玉ミックスなどが楽しめるディープな製麺所。", hours: "7:00〜15:00（日曜定休）", placeId: "ChIJJbgoyr3rUzUR-4c_CsSfJKo" },
+                { name: "手打ちうどん はりや", desc: "かしわざるやイカ天が絶品の行列が絶えない人気店。", hours: "11:00〜14:00（日曜定休）", placeId: "ChIJr3W1SmfpUzURuRaLkBeT1t8" },
+                { name: "手打ちうどん ひさ枝", desc: "朝7時から営業。多彩なメニューとセルフのトッピングが充実。", hours: "7:00〜14:00（無休）", placeId: "ChIJ73bALl3pUzURYNC9QLnxXcw" },
+                { name: "手打うどん 麦蔵", desc: "もっちりとした強いコシの麺とジューシーなかしわ天の組み合わせ。", hours: "11:00〜14:00（木曜定休）", placeId: "ChIJscdb03_rUzURa2v4ClQZ2Eg" },
+                { name: "手打ちうどん 鶴丸", desc: "夜20時から営業。スパイシーなカレーうどんがシメの定番。", hours: "20:00〜翌2:00（日曜定休）", placeId: "ChIJJzZ1TJvrUzURXST8qAQ2wT0" },
+                { name: "しんぺいうどん", desc: "瓦町駅近く。夜は一品料理やうどん居酒屋としても楽しめる。", hours: "18:00〜翌2:00（月曜定休）", placeId: "ChIJUWxBxZnrUzURqk3WNOcveCw" },
+                { name: "饂角製麺", desc: "夜の時間帯に本格的な製麺所の味が楽しめる貴重なお店。", hours: "18:00〜21:00（火曜定休）", placeId: "ChIJBwR5HgDrUzURopBwKgPseYs" },
+                { name: "宮武うどん", desc: "いりこ出汁がしっかり効いた昔ながらの本格派。", hours: "9:30〜15:00（水曜定休）", placeId: "ChIJtfNVoG3CUzURsg6AOqHApQg" }
+            ]
+        };
+
+        function spin(areaKey) {
+            const list = db[areaKey];
+            const card = document.getElementById('result-' + areaKey);
+            
+            card.className = "result-card active";
+            card.innerHTML = `<div class="store-name" style="color:#ff6b6b;">抽選中…… 🌀</div>`;
+
+            setTimeout(() => {
+                const item = list[Math.floor(Math.random() * list.length)];
+                card.innerHTML = `
+                    <div class="store-name">🎉 ${item.name}</div>
+                    <div class="store-desc">${item.desc}</div>
+                    <div class="store-hours">営業時間: ${item.hours}</div><br>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name)}&query_place_id=${item.placeId}" target="_blank">🗺️ Googleマップで見る</a>
+                `;
+            }, 300);
+        }
+
+        function spinAll() {
+            spin('kanonji');
+            spin('marugame_etc');
+            spin('takamatsu');
+        }
+    </script>
+</body>
+</html>
